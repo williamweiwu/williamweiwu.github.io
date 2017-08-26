@@ -1,5 +1,5 @@
 % ======================================================================= %
-%           *** Canonical Consistent Weighted Sampling ***                %
+%           *** Improved Consistent Weighted Sampling Revisited ***       %
 %              Author: Wei WU (william.third.wu@gmail.com)                %
 %              CAI, University of Technology Sydney (UTS)                 % 
 % ----------------------------------------------------------------------- %                                 
