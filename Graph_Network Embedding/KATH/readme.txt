@@ -7,8 +7,10 @@ If you use our algorithms and data sets in your research, please cite the follow
   title={{$K$}-{A}ry {T}ree {H}ashing for {F}ast {G}raph {C}lassification},
   author={Wu, Wei and Li, Bin and Chen, Ling and Zhu, Xingquan and Zhang, Chengqi},
   journal={IEEE Transactions on Knowledge and Data Engineering},
-  year={2017},
-  note={(in press)}
+  volume={30},
+  number={5},
+  pages={936--949},
+  year={2018}
 }
 
 Data:
