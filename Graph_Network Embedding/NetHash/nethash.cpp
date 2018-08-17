@@ -28,6 +28,17 @@
 
 using namespace std;
 
+/*
+ Input: 
+   network - adjacency list where each row represents a node and saves the indices of adjacency nodes
+   feature - feature list where each row represents a node and saves the indices of features owned by the node
+   hashdim - dimension of network embedding or fingerpints by hashing
+   depth   - depth of rooted trees
+   degreeentropy - entropy of degrees
+ Output: 
+   embedding - file which saves fingerprints for each node
+   runtime - total runtime in seconds
+*/
 
 char networkFile[MAX_STRING], featureFile[MAX_STRING], embeddingFile[MAX_STRING], timeFile[MAX_STRING];
 
