@@ -1,3 +1,13 @@
+/* ===================================================================================================== 
+           					*** NetHash ***             
+              			Author: Wei WU (william.third.wu@gmail.com)                
+              			CAI, University of Technology Sydney (UTS)                 
+ -------------------------------------------------------------------------------------------------------                              
+ 	Citation: W. Wu, B. Li, L. Chen, & C. Zhang, "Efficient Attributed Network Embedding via 
+ 			Recursive Randomized Hashing", IJCAI 2018.  					 
+ ======================================================================================================= */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
