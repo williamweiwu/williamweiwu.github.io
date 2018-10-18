@@ -22,6 +22,7 @@ If you use our algorithms in your research, please cite the following papers as 
 @article{wu2017improved,
   title={{I}mproved {C}onsistent {W}eighted {S}ampling {R}evisited},
   author={Wu, Wei and Li, Bin and Chen, Ling and Zhang, Chengqi and Yu, Philip S},
-  journal={arXiv preprint arXiv:1706.01172},
-  year={2017}
+  journal={TKDE},
+  year={2017},
+  note={accepted}
 }
