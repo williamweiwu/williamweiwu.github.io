@@ -1,2 +1,2 @@
 # williamweiwu.github.io
-I am currently a Research Associate in data mining and machine learning at The University of Sydney, Australia.
+I am currently a data scientist & Postdoctoral at ProCan, Children's Medical Research Institute, The University of Sydney, Australia.
