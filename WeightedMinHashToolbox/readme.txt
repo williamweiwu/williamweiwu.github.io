@@ -2,7 +2,6 @@ Required packages:
 numpy >= 1.15.0
 scipy >= 1.1.0
 ctypes >= 1.1.0
-sympy >= 1.2
 
 
 Before running the toolbox, please compile the following .cpp files because 4 algorithms call them. 
