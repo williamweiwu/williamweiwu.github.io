@@ -7,7 +7,7 @@ into the hash code of the specified length, and computes the time of encoding.
 
 Usage
 ---------
-    >>> from WeightedMinHashToolbox import *
+    >>> from WeightedMinHash import WeightedMinHash
     >>> wmh = WeightedMinHash.WeightedMinHash(data, dimension_num, seed)
     >>> fingerprints_k, fingerprints_y, elapsed = wmh.algorithm_name(...)
       or
