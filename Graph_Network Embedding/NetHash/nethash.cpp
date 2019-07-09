@@ -310,7 +310,7 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 			delete [](headElement.minHashValues);
 			
 			if(featureConcatenationFlag) {
-				delete features;
+				delete []features;
 			}
 			
 			
@@ -351,7 +351,7 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 		delete [](headElement.minHashValues);
 		
 		if(featureConcatenationFlag) {
-			delete features;
+			delete []features;
 		}
 		featureConcatenationFlag = true;
 		
