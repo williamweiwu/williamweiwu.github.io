@@ -503,7 +503,7 @@ int main(int argc, char **argv) {
 		fingerprints[iNode] = fingerprint;		
 	}
 	timeEnd = time(NULL);
-	elapsedTime = timeEnd - timeBegin;
+	elapsedTime = ((double)(timeEnd - timeBegin))/CLOCK;
 	cout<< "elapsed time: "<< elapsedTime << endl;
 	
 	output(fingerprints, networkSize,  k, elapsedTime);
