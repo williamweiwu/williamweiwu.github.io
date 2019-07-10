@@ -365,7 +365,7 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 }
 
 
-void output(unsigned int **fingerprints, int networkSize, int k, time_t elapsedTime) {
+void output(unsigned int **fingerprints, int networkSize, int k, double elapsedTime) {
 	ofstream fout(embeddingFile);
 	if(!fout.is_open()) {
 		cout<<"fail to open embedding file!"<<endl;
@@ -489,7 +489,8 @@ int main(int argc, char **argv) {
 	int ppt[PPT_SIZE][3];
 	unsigned int *fingerprint = NULL;
 	struct PPTparameters pptParameters;
-	time_t timeBegin, timeEnd, elapsedTime;
+	clock_t timeBegin, timeEnd;
+	double elapsedTime;
 	unsigned int **fingerprints = new unsigned int *[networkSize];
 	timeBegin = time(NULL);	
 	
