@@ -1,13 +1,3 @@
-/* ===================================================================================================== 
-           					*** NetHash ***             
-              			Author: Wei WU (william.third.wu@gmail.com)                
-              			CAI, University of Technology Sydney (UTS)                 
- -------------------------------------------------------------------------------------------------------                              
- 	Citation: W. Wu, B. Li, L. Chen, & C. Zhang, "Efficient Attributed Network Embedding via 
- 			Recursive Randomized Hashing", IJCAI 2018.  					 
- ======================================================================================================= */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -22,23 +12,12 @@
 #define PPT_SIZE 1000000000
 #define MAX_STRING 100
 #define MAX_NODE_NUM 1000000000
-#define MAX_FEATURE_NUM 10000000	// warning: large MAX_FEATURE_NUM causes segmenation default
+#define MAX_FEATURE_NUM 1000000	// warning: large MAX_FEATURE_NUM causes segmenation default
 #define MAX_PARAMETER_NUM 300
 #define PRIME_NUM 348513
 
 using namespace std;
 
-/*
- Input: 
-   network - adjacency list where each row represents a node and saves the indices of adjacency nodes
-   feature - feature list where each row represents a node and saves the indices of features owned by the node
-   hashdim - dimension of network embedding or fingerpints by hashing
-   depth   - depth of rooted trees
-   degreeentropy - entropy of degrees
- Output: 
-   embedding - file which saves fingerprints for each node
-   runtime - total runtime in seconds
-*/
 
 char networkFile[MAX_STRING], featureFile[MAX_STRING], embeddingFile[MAX_STRING], timeFile[MAX_STRING];
 
@@ -145,14 +124,21 @@ int readFeatures(char* featureFile, unsigned int **tmpFeatureTwoArrays, int *tmp
 	unsigned int *featureArray = NULL;
 	int nodeNum = 0;
 	while(getline(fin, line)) {
-		boost::split(featureVector, line, boost::is_any_of(" "), boost::token_compress_on);
-	
-		featureArray = new unsigned int[featureVector.size()];
-		for(int iFeature=0; iFeature < featureVector.size(); iFeature++) {
-			featureArray[iFeature]= stoi(featureVector.at(iFeature));
+		
+		if(line.empty()) {
+			tmpFeatureNumOneArray[nodeNum] = 1;
+			featureArray = new unsigned int[1];
+			featureArray[0] = MAX_FEATURE_NUM;
+		} else {
+			boost::split(featureVector, line, boost::is_any_of(" "), boost::token_compress_on);
+			featureArray = new unsigned int[featureVector.size()];
+			for(int iFeature=0; iFeature < featureVector.size(); iFeature++) {
+				featureArray[iFeature]= stoi(featureVector.at(iFeature));
+			}
+			tmpFeatureNumOneArray[nodeNum] = featureVector.size();
 		}
+	
 		tmpFeatureTwoArrays[nodeNum] = featureArray;
-		tmpFeatureNumOneArray[nodeNum] = featureVector.size();
 		nodeNum++;
 		featureVector.clear();
 	}
@@ -166,18 +152,19 @@ struct PPTparameters buildParentPointerTree(int **network, int *adjNum, int netw
 		
 	struct PPTparameters pptParameters;
 	
-	if(!network[nodeId]) {
-		pptParameters.lengthOfPPT = 1;
-		pptParameters.numberOfLeaves = 1;
-		return pptParameters;
-	}
-	
 	// node as root of a ppt
 	int pptSize = 1;
 	ppt[0][0] = nodeId;
 	ppt[0][1] = -1;
 	ppt[0][2] = 0;
 
+	if(!network[nodeId]) {
+		pptParameters.lengthOfPPT = 1;
+		pptParameters.numberOfLeaves = 1;
+		return pptParameters;
+	}
+	
+	
 	// in each level, point the leftmost child and rightmost child, respectively
 	int leftmost = 0;
 	int rightmost = 0;
@@ -191,7 +178,7 @@ struct PPTparameters buildParentPointerTree(int **network, int *adjNum, int netw
 		for(int iNode = leftmost; iNode <= rightmost; iNode++) {
 			iParent++;
 			currentNode = ppt[iNode][0];
-			children = network[currentNode];
+			children = network[currentNode];			
 			for(int iChildren=0; iChildren < adjNum[currentNode]; iChildren++) {
 				ppt[pptSize][0] = children[iChildren];
 				ppt[pptSize][1] = iParent;
@@ -201,6 +188,7 @@ struct PPTparameters buildParentPointerTree(int **network, int *adjNum, int netw
 		}
 		leftmost = rightmost+1;
 		rightmost = pptSize -1;
+		
 	}
 	
 	// numberOfLeaves
@@ -215,10 +203,24 @@ void minHash(unsigned int **hashParameters, unsigned int *divisors, int paramete
 	// row: feature
 	// column: parameter
 	// the operation of minhash is frequent, so static arrays are preferred for effeciency.
+	
+	if(features[0] == MAX_FEATURE_NUM) {
+		for(int iColumn = 0; iColumn < parameterNum; iColumn++) {	
+			minHashValues[iColumn] = MAX_FEATURE_NUM;
+		}
+		return;
+	}
+	
 	unsigned int result[MAX_FEATURE_NUM][MAX_PARAMETER_NUM];
 	for(int iRow = 0; iRow< featureNum; iRow++) {	
 		for(int jColumn = 0; jColumn < parameterNum; jColumn++) {
-			result[iRow][jColumn] = (features[iRow]* hashParameters[jColumn][0] + hashParameters[jColumn][1]) % divisors[jColumn];
+			
+			if(features[iRow] == MAX_FEATURE_NUM) {
+				result[iRow][jColumn] = divisors[0] + 1;
+			} else {
+				result[iRow][jColumn] = (features[iRow]* hashParameters[jColumn][0] + hashParameters[jColumn][1]) % divisors[jColumn];
+			}
+			
 		}
 	}
 		
@@ -252,14 +254,12 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 	unsigned int ***hashParametersThreeArrays, unsigned int **divisorsTwoArrays, int *parameterNum, unsigned int *fingerprint) {
 	
 	int currentNode;
-	
 	if(pptEnd == 0) {
 		currentNode = ppt[0][0]; 
 		minHash(hashParametersThreeArrays[0], divisorsTwoArrays[0], parameterNum[0], featureTwoArrays[currentNode], featureNumOneArray[currentNode], fingerprint);
 		return;
 	}
-	
-	
+		
 	unsigned int *features = NULL;
 	unsigned int *mergedFeatures = NULL;
 	int mergedFeatureNum = 0;
@@ -300,7 +300,6 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 
 		headElement = auxiliaryQueue->front();
 		while(iNode == ppt[headElement.iNode][1]){
-
 			auxiliaryQueue->pop_front();
 			mergedFeatureNum = featureNum + parameterNum[ppt[headElement.iNode][2]];
 			mergedFeatures = new unsigned int [mergedFeatureNum];
@@ -310,7 +309,8 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 			delete [](headElement.minHashValues);
 			
 			if(featureConcatenationFlag) {
-				delete []features;
+				//delete features;
+				delete[] features;
 			}
 			
 			
@@ -327,7 +327,6 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 		}
 		minHashValues = new unsigned int [paraNum];
 		minHash(hashParametersThreeArrays[ppt[iNode][2]], divisorsTwoArrays[ppt[iNode][2]], paraNum, mergedFeatures, mergedFeatureNum, minHashValues);
-
 		elementInQueue.minHashValues = minHashValues;
 		elementInQueue.iNode = iNode;
 		auxiliaryQueue->push_back(elementInQueue);
@@ -351,7 +350,8 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 		delete [](headElement.minHashValues);
 		
 		if(featureConcatenationFlag) {
-			delete []features;
+			//delete features;
+			delete[] features;
 		}
 		featureConcatenationFlag = true;
 		
@@ -362,6 +362,7 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 	
 	delete[] mergedFeatures;	
 	delete auxiliaryQueue;
+	
 }
 
 
@@ -397,7 +398,6 @@ int ArgPos(char *str, int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-	
 	int k = 0;
 	float degreeEntropy = 0;
 	int depth = 0;
@@ -463,12 +463,19 @@ int main(int argc, char **argv) {
 	unsigned int **featureTwoArrays = new unsigned int*[networkSize];
 	int *featureNumOneArray = new int[networkSize];
 	for(int iNode = 0; iNode < networkSize; iNode++) {
-		featureTwoArrays[iNode] = new unsigned int[tmpFeatureNumOneArray[iNode]];
-		for(int iFeature = 0; iFeature < tmpFeatureNumOneArray[iNode]; iFeature++) {
-			featureTwoArrays[iNode][iFeature] = tmpFeatureTwoArrays[iNode][iFeature];
+		
+		if(tmpFeatureNumOneArray[iNode] == 0) {
+			featureTwoArrays[iNode] = NULL;
+			featureNumOneArray[iNode] = 0;
+		} else {
+			featureTwoArrays[iNode] = new unsigned int[tmpFeatureNumOneArray[iNode]];
+			for(int iFeature = 0; iFeature < tmpFeatureNumOneArray[iNode]; iFeature++) {
+				featureTwoArrays[iNode][iFeature] = tmpFeatureTwoArrays[iNode][iFeature];
+			}
+			featureNumOneArray[iNode] = tmpFeatureNumOneArray[iNode];
 		}
-		featureNumOneArray[iNode] = tmpFeatureNumOneArray[iNode];
 	}
+	
 	//delete temporary memory
 	for(int iNode = 0; iNode < MAX_NODE_NUM; iNode++) {
 		delete[] tmpFeatureTwoArrays[iNode];
@@ -492,7 +499,7 @@ int main(int argc, char **argv) {
 	clock_t timeBegin, timeEnd;
 	double elapsedTime;
 	unsigned int **fingerprints = new unsigned int *[networkSize];
-	timeBegin = time(NULL);	
+	timeBegin = clock();	
 	
 	for(int iNode = 0; iNode < networkSize; iNode++) {
 		pptParameters = buildParentPointerTree(network, adjNum, networkSize, iNode, depth, ppt);
@@ -502,9 +509,9 @@ int main(int argc, char **argv) {
 		traversePPT(networkSize, iNode, depth, ppt, pptEnd, nonLeavesEnd, featureTwoArrays, featureNumOneArray, hashParametersThreeArrays, divisorsTwoArrays, parameterNum, fingerprint);
 		fingerprints[iNode] = fingerprint;		
 	}
-	timeEnd = time(NULL);
-	elapsedTime = ((double)(timeEnd - timeBegin))/CLOCK;
-	cout<< "elapsed time: "<< elapsedTime << endl;
+	timeEnd = clock();
+	elapsedTime = ((double)(timeEnd - timeBegin))/CLOCKS_PER_SEC;
+	cout<< elapsedTime<<endl;
 	
 	output(fingerprints, networkSize,  k, elapsedTime);
 	
