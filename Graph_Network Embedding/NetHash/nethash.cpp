@@ -221,7 +221,7 @@ void minHash(unsigned int **hashParameters, unsigned int *divisors, int paramete
 	//unsigned int  result[MAX_FEATURE_NUM][MAX_PARAMETER_NUM];
 	for(int iRow = 0; iRow< featureNum; iRow++) {	
 		for(int jColumn = 0; jColumn < parameterNum; jColumn++) {
-			result[iRow*MAX_FEATURE_NUM + jColumn] = (features[iRow]* hashParameters[jColumn][0] + hashParameters[jColumn][1]) % divisors[jColumn];
+			result[iRow*MAX_PARAMETER_NUM + jColumn] = (features[iRow]* hashParameters[jColumn][0] + hashParameters[jColumn][1]) % divisors[jColumn];
 		}
 	}
 		
@@ -231,8 +231,8 @@ void minHash(unsigned int **hashParameters, unsigned int *divisors, int paramete
 		minValue = result[iColumn];
 		minIndex = 0;
 		for(int jRow = 1; jRow < featureNum; jRow++) {
-			if(minValue > result[jRow*MAX_FEATURE_NUM + iColumn]) {
-				minValue = result[jRow*MAX_FEATURE_NUM + iColumn];
+			if(minValue > result[jRow*MAX_PARAMETER_NUM + iColumn]) {
+				minValue = result[jRow*MAX_PARAMETER_NUM + iColumn];
 				minIndex = jRow;
 			}
 		}
