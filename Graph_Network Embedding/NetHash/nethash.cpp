@@ -19,12 +19,13 @@
 #include <deque>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#define PPT_SIZE 1000000000
-#define MAX_STRING 100
-#define MAX_NODE_NUM 1000000000
-#define MAX_FEATURE_NUM 10000000	// warning: large MAX_FEATURE_NUM causes segmenation default
-#define MAX_PARAMETER_NUM 300
-#define PRIME_NUM 348513
+constexpr size_t  PPT_SIZE = 1000000000;
+constexpr size_t  MAX_STRING = 255;
+constexpr size_t  MAX_NODE_NUM = 1000000000;
+constexpr size_t  MAX_FEATURE_NUM = 10000000;
+constexpr size_t  MAX_PARAMETER_NUM = 300;
+constexpr size_t  PRIME_NUM = 348513;
+constexpr size_t  PPT_DIM2 = 3;
 
 using namespace std;
 
@@ -57,10 +58,11 @@ struct ElementInQueue {
 // return unsigned int* primeArray
 void readRandomPrimes(string primesFile, unsigned int* primeArray) {
 	string line;
-	int i=0;
+	size_t i=0;
 	ifstream  fin(primesFile);
 	if(!fin.is_open()) {
 		cout<<"primes file not found!"<<endl;
+		exit(1);
 	}
 	while(getline(fin, line) && i<PRIME_NUM) {
 		primeArray[i] = stoi(line);
@@ -120,7 +122,7 @@ void readNetwork(char* adjListFile, int networkSize, int **network, int *adjNum)
 			boost::split(adjlist, line, boost::is_any_of(" "), boost::token_compress_on);
 	
 			nodes = new int[adjlist.size()];
-			for(int iNode=0; iNode < adjlist.size(); iNode++) {
+			for(size_t iNode=0; iNode < adjlist.size(); iNode++) {
 				nodes[iNode] = stoi(adjlist.at(iNode));
 			}
 			network[iRow] = nodes;
@@ -148,7 +150,7 @@ int readFeatures(char* featureFile, unsigned int **tmpFeatureTwoArrays, int *tmp
 		boost::split(featureVector, line, boost::is_any_of(" "), boost::token_compress_on);
 	
 		featureArray = new unsigned int[featureVector.size()];
-		for(int iFeature=0; iFeature < featureVector.size(); iFeature++) {
+		for(size_t iFeature=0; iFeature < featureVector.size(); iFeature++) {
 			featureArray[iFeature]= stoi(featureVector.at(iFeature));
 		}
 		tmpFeatureTwoArrays[nodeNum] = featureArray;
@@ -162,7 +164,7 @@ int readFeatures(char* featureFile, unsigned int **tmpFeatureTwoArrays, int *tmp
 }
 
 
-struct PPTparameters buildParentPointerTree(int **network, int *adjNum, int networkSize, int nodeId, int depth, int ppt[][3]) {
+struct PPTparameters buildParentPointerTree(int **network, int *adjNum, int networkSize, int nodeId, int depth, int ppt[]) {
 		
 	struct PPTparameters pptParameters;
 	
@@ -174,9 +176,9 @@ struct PPTparameters buildParentPointerTree(int **network, int *adjNum, int netw
 	
 	// node as root of a ppt
 	int pptSize = 1;
-	ppt[0][0] = nodeId;
-	ppt[0][1] = -1;
-	ppt[0][2] = 0;
+	ppt[0] = nodeId;
+	ppt[1] = -1;
+	ppt[2] = 0;
 
 	// in each level, point the leftmost child and rightmost child, respectively
 	int leftmost = 0;
@@ -190,12 +192,12 @@ struct PPTparameters buildParentPointerTree(int **network, int *adjNum, int netw
 	for(int d = 1; d<= depth; d++) {
 		for(int iNode = leftmost; iNode <= rightmost; iNode++) {
 			iParent++;
-			currentNode = ppt[iNode][0];
+			currentNode = ppt[iNode*PPT_DIM2];
 			children = network[currentNode];
 			for(int iChildren=0; iChildren < adjNum[currentNode]; iChildren++) {
-				ppt[pptSize][0] = children[iChildren];
-				ppt[pptSize][1] = iParent;
-				ppt[pptSize][2] = d;
+				ppt[pptSize*PPT_DIM2] = children[iChildren];
+				ppt[pptSize*PPT_DIM2 + 1] = iParent;
+				ppt[pptSize*PPT_DIM2 + 2] = d;
 				pptSize++;
 			}
 		}
@@ -215,21 +217,22 @@ void minHash(unsigned int **hashParameters, unsigned int *divisors, int paramete
 	// row: feature
 	// column: parameter
 	// the operation of minhash is frequent, so static arrays are preferred for effeciency.
-	unsigned int result[MAX_FEATURE_NUM][MAX_PARAMETER_NUM];
+	static unsigned  *result = new unsigned[MAX_FEATURE_NUM*MAX_PARAMETER_NUM];  // Note: released on app completion
+	//unsigned int  result[MAX_FEATURE_NUM][MAX_PARAMETER_NUM];
 	for(int iRow = 0; iRow< featureNum; iRow++) {	
 		for(int jColumn = 0; jColumn < parameterNum; jColumn++) {
-			result[iRow][jColumn] = (features[iRow]* hashParameters[jColumn][0] + hashParameters[jColumn][1]) % divisors[jColumn];
+			result[iRow*MAX_FEATURE_NUM + jColumn] = (features[iRow]* hashParameters[jColumn][0] + hashParameters[jColumn][1]) % divisors[jColumn];
 		}
 	}
 		
 	unsigned int minValue;
 	int minIndex;
 	for(int iColumn = 0; iColumn < parameterNum; iColumn++) {	
-		minValue = result[0][iColumn];
+		minValue = result[iColumn];
 		minIndex = 0;
 		for(int jRow = 1; jRow < featureNum; jRow++) {
-			if(minValue > result[jRow][iColumn]) {
-				minValue = result[jRow][iColumn];
+			if(minValue > result[jRow*MAX_FEATURE_NUM + iColumn]) {
+				minValue = result[jRow*MAX_FEATURE_NUM + iColumn];
 				minIndex = jRow;
 			}
 		}
@@ -247,14 +250,14 @@ void mergeArrays(unsigned int *features, int featureNum, unsigned int *firstComp
 	}
 }
 
-void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEnd, int nonLeavesEnd, 
+void traversePPT(int networkSize, int nodeId, int depth, int ppt[], int pptEnd, int nonLeavesEnd, 
 	unsigned int **featureTwoArrays, int *featureNumOneArray, 
 	unsigned int ***hashParametersThreeArrays, unsigned int **divisorsTwoArrays, int *parameterNum, unsigned int *fingerprint) {
 	
 	int currentNode;
 	
 	if(pptEnd == 0) {
-		currentNode = ppt[0][0]; 
+		currentNode = ppt[0]; 
 		minHash(hashParametersThreeArrays[0], divisorsTwoArrays[0], parameterNum[0], featureTwoArrays[currentNode], featureNumOneArray[currentNode], fingerprint);
 		return;
 	}
@@ -273,7 +276,7 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 	unsigned int **lastHashParameters = NULL;
 	unsigned int *lashDivisors = NULL;
 	for(int iNode= pptEnd; iNode > nonLeavesEnd; iNode--) {
-		currentNode = ppt[iNode][0]; 
+		currentNode = ppt[iNode*PPT_DIM2]; 
 		features = featureTwoArrays[currentNode]; 
 		featureNum = featureNumOneArray[currentNode]; 
 		
@@ -293,18 +296,18 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 	// for internal nodes
 	for(int iNode = nonLeavesEnd; iNode >0; iNode--) {
 		featureConcatenationFlag = false;
-		currentNode = ppt[iNode][0];
+		currentNode = ppt[iNode*PPT_DIM2];
 		features = featureTwoArrays[currentNode];
 		featureNum = featureNumOneArray[currentNode];
-		paraNum = parameterNum[ppt[iNode][2]];   
+		paraNum = parameterNum[ppt[iNode*PPT_DIM2 + 2]];   
 
 		headElement = auxiliaryQueue->front();
-		while(iNode == ppt[headElement.iNode][1]){
+		while(iNode == ppt[headElement.iNode*PPT_DIM2 + 1]){
 
 			auxiliaryQueue->pop_front();
-			mergedFeatureNum = featureNum + parameterNum[ppt[headElement.iNode][2]];
+			mergedFeatureNum = featureNum + parameterNum[ppt[headElement.iNode*PPT_DIM2 + 2]];
 			mergedFeatures = new unsigned int [mergedFeatureNum];
-			mergeArrays(features, featureNum, headElement.minHashValues, parameterNum[ppt[headElement.iNode][2]], mergedFeatures);
+			mergeArrays(features, featureNum, headElement.minHashValues, parameterNum[ppt[headElement.iNode*PPT_DIM2 + 2]], mergedFeatures);
 		
 			
 			delete [](headElement.minHashValues);
@@ -326,7 +329,7 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 			
 		}
 		minHashValues = new unsigned int [paraNum];
-		minHash(hashParametersThreeArrays[ppt[iNode][2]], divisorsTwoArrays[ppt[iNode][2]], paraNum, mergedFeatures, mergedFeatureNum, minHashValues);
+		minHash(hashParametersThreeArrays[ppt[iNode*PPT_DIM2 + 2]], divisorsTwoArrays[ppt[iNode*PPT_DIM2 + 2]], paraNum, mergedFeatures, mergedFeatureNum, minHashValues);
 
 		elementInQueue.minHashValues = minHashValues;
 		elementInQueue.iNode = iNode;
@@ -337,7 +340,7 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 
 	// for root
 	featureConcatenationFlag = false;
-	currentNode = ppt[0][0];
+	currentNode = ppt[0];
 	features = featureTwoArrays[currentNode];
 	featureNum = featureNumOneArray[currentNode];
 	paraNum = parameterNum[0];
@@ -345,9 +348,9 @@ void traversePPT(int networkSize, int nodeId, int depth, int ppt[][3], int pptEn
 		headElement = auxiliaryQueue->front();
 		auxiliaryQueue->pop_front();
 		
-		mergedFeatureNum = featureNum + parameterNum[ppt[headElement.iNode][2]];
+		mergedFeatureNum = featureNum + parameterNum[ppt[headElement.iNode*PPT_DIM2 + 2]];
 		mergedFeatures = new unsigned int [mergedFeatureNum];
-		mergeArrays(features, featureNum, headElement.minHashValues, parameterNum[ppt[headElement.iNode][2]], mergedFeatures);		
+		mergeArrays(features, featureNum, headElement.minHashValues, parameterNum[ppt[headElement.iNode*PPT_DIM2 + 2]], mergedFeatures);		
 		delete [](headElement.minHashValues);
 		
 		if(featureConcatenationFlag) {
@@ -396,7 +399,7 @@ int ArgPos(char *str, int argc, char **argv) {
 	return -1;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char* argv[]) {
 	
 	int k = 0;
 	float degreeEntropy = 0;
@@ -470,7 +473,7 @@ int main(int argc, char **argv) {
 		featureNumOneArray[iNode] = tmpFeatureNumOneArray[iNode];
 	}
 	//delete temporary memory
-	for(int iNode = 0; iNode < MAX_NODE_NUM; iNode++) {
+	for(size_t iNode = 0; iNode < MAX_NODE_NUM; iNode++) {
 		delete[] tmpFeatureTwoArrays[iNode];
 	}
 	delete[] tmpFeatureTwoArrays;
@@ -486,13 +489,13 @@ int main(int argc, char **argv) {
 
 	int pptEnd;
 	int nonLeavesEnd;
-	int ppt[PPT_SIZE][3];
 	unsigned int *fingerprint = NULL;
 	struct PPTparameters pptParameters;
 	clock_t timeBegin, timeEnd;
 	double elapsedTime;
 	unsigned int **fingerprints = new unsigned int *[networkSize];
 	timeBegin = time(NULL);	
+	int *ppt = new int[PPT_SIZE*PPT_DIM2];  // [PPT_SIZE][3]
 	
 	for(int iNode = 0; iNode < networkSize; iNode++) {
 		pptParameters = buildParentPointerTree(network, adjNum, networkSize, iNode, depth, ppt);
@@ -502,8 +505,9 @@ int main(int argc, char **argv) {
 		traversePPT(networkSize, iNode, depth, ppt, pptEnd, nonLeavesEnd, featureTwoArrays, featureNumOneArray, hashParametersThreeArrays, divisorsTwoArrays, parameterNum, fingerprint);
 		fingerprints[iNode] = fingerprint;		
 	}
+	delete[] ppt;  // Note: ppt is anyway automatically released on the app completion
 	timeEnd = time(NULL);
-	elapsedTime = ((double)(timeEnd - timeBegin))/CLOCK;
+	elapsedTime = timeEnd - timeBegin;
 	cout<< "elapsed time: "<< elapsedTime << endl;
 	
 	output(fingerprints, networkSize,  k, elapsedTime);
