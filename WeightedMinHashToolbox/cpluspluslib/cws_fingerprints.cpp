@@ -161,18 +161,18 @@ void ActiveIndices(int feature_id, double weight, int seed, int d_id, double *yz
 
 double Solve(double z, double beta) {
 	
-	double low = 0, high = 1, mid = 0;
-	while(high-low > epsilon) {
+	double low = 0, high = 1, mid = (low+high)/2;
+	while(fabs(pow(mid,z)+pow(mid,z)*z*log(1/mid) - beta) > epsilon) {
 		
-		mid = (low+high)/2;
-		if (abs(pow(mid,z)+pow(mid,z)*z*log(1/mid) - beta) < epsilon) {
-			return mid;
-		} else if(abs(pow(mid,z)+pow(mid,z)*z*log(1/mid) - beta) > epsilon) {
+        	if(pow(mid,z)+pow(mid,z)*z*log(1/mid) - beta > epsilon) {
 			high = mid;
 		} else {
 			low = mid;
 		}
+		mid = (low+high)/2;
 	}
+    	return mid;
+	
 }
 
 void GenerateFingerprint(int dimension_num, double *feature_weight, int *feature_id, int feature_id_num, int seed, double *fingerprint_k, double *fingerprint_y) {
