@@ -51,6 +51,7 @@ Note
 """
 
 import numpy as np
+import numpy.matlib
 import scipy as sp
 import scipy.sparse as sparse
 import time
