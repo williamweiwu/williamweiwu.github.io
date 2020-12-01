@@ -1,4 +1,4 @@
-In this paper, we adopt three datasets as follows:
+In this work, we adopt three datasets as follows:
 
 	1) 	America_data.txt
 	   	America_impact.mat
