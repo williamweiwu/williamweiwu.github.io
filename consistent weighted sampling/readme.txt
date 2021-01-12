@@ -26,3 +26,11 @@ If you use our algorithms in your research, please cite the following papers as 
   pages={2332--2345},
   year={2019}
 }
+
+@article{wu2020review,
+  title={{A} {R}eview for {W}eighted {M}in{H}ash {A}lgorithms},
+  author={Wu, Wei and Li, Bin and Chen, Ling and Gao, Junbin and Zhang, Chengqi},
+  journal={IEEE Transactions on Knowledge and Data Engineering},
+  year={2020},
+  publisher={IEEE}
+}
