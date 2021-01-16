@@ -20,6 +20,7 @@ using namespace std;
 
 
 char networkFile[MAX_STRING], featureFile[MAX_STRING], embeddingFile[MAX_STRING], timeFile[MAX_STRING];
+int ppt[PPT_SIZE][3];
 
 struct PPTparameters {
 	int lengthOfPPT;
@@ -493,7 +494,6 @@ int main(int argc, char **argv) {
 
 	int pptEnd;
 	int nonLeavesEnd;
-	int ppt[PPT_SIZE][3];
 	unsigned int *fingerprint = NULL;
 	struct PPTparameters pptParameters;
 	clock_t timeBegin, timeEnd;
