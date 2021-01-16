@@ -153,8 +153,7 @@ void minHash(unsigned int **hashParameters, unsigned int *divisor, int k, unsign
 	
 	// row: feature
 	// column: parameter
-	// the operation of minhash is frequent, so static arrays are preferred for effeciency.
-
+	
 	if(features[0] == MAX_FEATURE_NUM) {
 		for(int iColumn = 0; iColumn < k; iColumn++) {	
 			minHashValues[iColumn] = MAX_FEATURE_NUM;
@@ -163,7 +162,6 @@ void minHash(unsigned int **hashParameters, unsigned int *divisor, int k, unsign
 		return;
 	}
 
-	//unsigned int result[MAX_FEATURE_NUM][MAX_PARAMETER_NUM];
 	unsigned int **result =  new unsigned int *[featureNum];
 	for(int iRow = 0; iRow< featureNum; iRow++) {	
 		for(int jColumn = 0; jColumn < k; jColumn++) {
@@ -195,7 +193,6 @@ void minHash(unsigned int hashParameter1, unsigned int hashParameter2, unsigned 
 	
 	// row: feature
 	// column: parameter
-	// the operation of minhash is frequent, so static arrays are preferred for effeciency.
 
 	if(features[0] == MAX_FEATURE_NUM) {
 
