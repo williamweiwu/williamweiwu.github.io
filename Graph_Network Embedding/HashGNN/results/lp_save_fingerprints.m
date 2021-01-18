@@ -3,7 +3,7 @@ clc
 
 method='hashgnn';
 
-datasets = {'twitter','facebook', 'blog' 'flickr',  'googleplus'};
+datasets = {'twitter','facebook', 'blog', 'flickr',  'googleplus'};
 iterations = [3,3,4,1,5];
 
 turns = 5;
