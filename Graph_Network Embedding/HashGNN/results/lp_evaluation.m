@@ -4,7 +4,7 @@ ratios = [0.5, 0.6, 0.7, 0.8, 0.9];
 
 times = 10000;
 method='hashgnn';
-datasets = {'twitter','facebook', 'blog' 'flickr',  'googleplus'};
+datasets = {'twitter','facebook', 'blog', 'flickr',  'googleplus'};
 ks = [3, 3, 4, 1, 5];
 
 iterations = 5;
