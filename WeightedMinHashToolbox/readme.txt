@@ -17,9 +17,12 @@ The algorithms transfer the weighted set into fingerprint.
 
 If you use our toolbox in your research, please cite the following paper as reference in your publicaions:
 
-@inproceedings{wu2018review,
-  title={{{A} {R}eview for {W}eighted {M}in{H}ash {A}lgorithms},
+@article{wu2018review,
+  title={{A} {R}eview for {W}eighted {M}inHash {A}lgorithms},
   author={Wu, Wei and Li, Bin and Chen, Ling and Gao, Junbin and Zhang, Chengqi},
-  journal={arXiv preprint arXiv:1811.04633},
-  year={2018}
+  journal={IEEE Transactions on Knowledge and Data Engineering}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={1-1},
 }
