@@ -2,8 +2,9 @@
 """Toolbox for Weighted MinHash Algorithms
 
 This module contains the following algorithms: the standard MinHash algorithm for binary sets and
-weighted MinHash algorithms for weighted sets. Each algorithm transforms a data instance (i.e., vector)
-into the hash code of the specified length, and computes the time of encoding.
+weighted MinHash algorithms for weighted sets. 
+Each algorithm transforms a data instance (i.e., vector) into the hash code of the specified length, 
+and computes the time of encoding.
 
 Authors
 -----------
