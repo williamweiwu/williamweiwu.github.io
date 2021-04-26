@@ -1,19 +1,8 @@
-Required packages:
-numpy == 1.15.0
-scipy == 1.1.0
-ctypes == 1.1.0
+Introduction
 
-Before running the toolbox, please compile the following .cpp files because 4 algorithms call them. 
-g++ -std=c++11 cpluspluslib/gollapudi1_fingerprints.cpp -fPIC -shared -o cpluspluslib/gollapudi1_fingerprints.so
 
-g++ -std=c++11 cpluspluslib/haeupler_expandset.cpp -fPIC -shared -o cpluspluslib/haeupler_expandset.so
+WeightedMinHashToolbox provides the MinHash algorithm and the weighted MinHash algorithms in the paper titled "A Review for Weighted MinHash Algorithms". The algorithms aim to efficiently represent the weighted set as a compact fingerprint without the inefficient learning process. Based on the compact representation, the users can conduct many high-level data mining and machine learning tasks, e.g., classification, retrieval, clustering, visualization, etc.
 
-g++ -std=c++11 cpluspluslib/cws_fingerprints.cpp -fPIC -shared -o cpluspluslib/cws_fingerprints.so
-
-g++ -std=c++11 cpluspluslib/haveliwala_expandset.cpp -fPIC -shared -o cpluspluslib/haveliwala_expandset.so
-
-The folder contains the toolbox for the MinHash algorithm and 12 weighted MinHash algorithms in the paper titled "A Review for Weighted MinHash Algorithms".
-The algorithms transfer the weighted set into fingerprint. 
 
 If you use our toolbox in your research, please cite the following paper as reference in your publicaions:
 
@@ -22,7 +11,16 @@ If you use our toolbox in your research, please cite the following paper as refe
   author={Wu, Wei and Li, Bin and Chen, Ling and Gao, Junbin and Zhang, Chengqi},
   journal={IEEE Transactions on Knowledge and Data Engineering}, 
   year={2020},
-  volume={},
-  number={},
   pages={1-1},
 }
+
+
+Before running the toolbox, please compile the following .cpp files because 4 algorithms call them. 
+
+• g++ -std=c++11 cpluspluslib/gollapudi1_fingerprints.cpp -fPIC -shared -o cpluspluslib/gollapudi1_fingerprints.so
+
+• g++ -std=c++11 cpluspluslib/haeupler_expandset.cpp -fPIC -shared -o cpluspluslib/haeupler_expandset.so
+
+• g++ -std=c++11 cpluspluslib/cws_fingerprints.cpp -fPIC -shared -o cpluspluslib/cws_fingerprints.so
+
+• g++ -std=c++11 cpluspluslib/haveliwala_expandset.cpp -fPIC -shared -o cpluspluslib/haveliwala_expandset.so
