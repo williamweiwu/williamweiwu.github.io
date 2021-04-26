@@ -3,7 +3,6 @@ Introduction
 
 WeightedMinHashToolbox provides the MinHash algorithm and the weighted MinHash algorithms in the paper titled "A Review for Weighted MinHash Algorithms". The paper elaborates the advantages and disadvantages of the algorithms and their application scenarios, and thus the users can select the appropriate methods in different scenes with the help of the paper. The algorithms aim to efficiently represent the weighted set as a compact fingerprint without the inefficient learning process. Based on the compact representation, the users can conduct many high-level data mining and machine learning tasks, e.g., classification, retrieval, clustering, visualization, etc.
 
-
 If you use our toolbox in your research, please cite the following paper as reference in your publicaions:
 
 @article{wu2018review,
@@ -13,7 +12,6 @@ If you use our toolbox in your research, please cite the following paper as refe
   year={2020},
   pages={1-1},
 }
-
 
 Before running the toolbox, please compile the following .cpp files because 4 algorithms call them. 
 
