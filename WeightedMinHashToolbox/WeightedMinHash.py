@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 """Toolbox for Weighted MinHash Algorithms
 
-This module contains 13 algorithms: the standard MinHash algorithm for binary sets and
-12 algorithms for weighted sets. Each algorithm transforms a data instance (i.e., vector)
+This module contains the following algorithms: the standard MinHash algorithm for binary sets and
+weighted MinHash algorithms for weighted sets. Each algorithm transforms a data instance (i.e., vector)
 into the hash code of the specified length, and computes the time of encoding.
+
+Authors
+-----------
+Wei WU
 
 Usage
 ---------
@@ -37,14 +41,6 @@ fingerprints: ndarray, shape (n_instances, dimension_num)
 
 elapsed: float
     time of hashing data matrix
-
-Authors
------------
-Wei WU
-
-See also
------------
-https://sites.google.com/site/aiweiwu88/
 
 Note
 -----------
