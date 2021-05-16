@@ -20,7 +20,7 @@ Usage
 
 Parameters
 ----------
-data: {array-like, sparse matrix}, shape (n_features, n_instances)
+data: {array-like, sparse matrix}, shape (n_features, n_instances), format='csc'
     a data matrix where row represents feature and column is data instance
 
 dimension_num: int
