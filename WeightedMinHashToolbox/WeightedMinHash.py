@@ -783,7 +783,7 @@ class WeightedMinHash:
 
         start = time.time()
 
-        bound = np.ceil(np.max(self.weighted_set * scale, 1)).todense().astype(int)
+        bound = np.ceil(np.max(self.weighted_set * scale, 1).todense()).astype(int)
         m_max = np.sum(bound)
         seed = np.arange(1, self.dimension_num+1)
 
