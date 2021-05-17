@@ -11,6 +11,20 @@ WeightedMinHashToolbox provides the MinHash algorithm and the weighted MinHash a
 The homepage of the toolbox is [here](https://github.com/drhash-cn).
 
 
+**Usage**
+
+    # Input data: {array-like, sparse matrix}, shape (n_features, n_instances), format='csc'
+    # a data matrix where row represents feature and column is data instance
+    
+    from drhash import WeightedMinHash
+    from scipy import sparse
+
+    data = sparse.rand(1000, 100, 0.2, format='csc')
+    wmh = WeightedMinHash.WeightedMinHash(data, 50)
+    fingerprints_k, fingerprints_y, elapsed = wmh.pcws()
+    fingerprints, elapsed = wmh.licws()
+
+
 **Citation**
 
 If you use our toolbox, please cite the following paper:
